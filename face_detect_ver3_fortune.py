@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
     # 被せる画像の指定
     # 画像引用元 https://www.ac-illust.com/main/detail.php?id=1704191
-    
+
     cv2_img = [] # 配列にすべての画像を格納する
     for i in range(6):
         img = "img/fortune_0" + str(i+1) + ".png"
@@ -61,7 +61,7 @@ if __name__ == '__main__':
 
         else:
             #顔が連続で検出されない回数
-            count=count+1
+            count+=1
 
             #その回数がcount_boundaryを超えた場合
             if count>=count_boundary:
