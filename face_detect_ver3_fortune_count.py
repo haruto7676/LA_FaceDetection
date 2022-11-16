@@ -1,5 +1,6 @@
 import cv2
 from util_func import  overlayImage
+import random
 
 if __name__ == '__main__':
     # 定数定義
@@ -25,12 +26,22 @@ if __name__ == '__main__':
     height, width, channels = c_frame.shape
 
     # ウィンドウの準備
-    cv2.namedWindow(WINDOW_NAME)
+    #cv2.namedWindow(WINDOW_NAME)
 
     # 被せる画像の指定
-    img = "nikoniko.png"
-    cv2_img = cv2.imread(img, cv2.IMREAD_UNCHANGED)
+    # 画像引用元 https://www.ac-illust.com/main/detail.php?id=1704191
+
+    cv2_img = [] # 配列にすべての画像を格納する
+    for i in range(6):
+        img = "img/fortune_0" + str(i+1) + ".png"
+        cv2_img.append(cv2.imread(img, cv2.IMREAD_UNCHANGED))
     
+    
+    # 変換処理ループカウントの初期化
+    count=0
+
+    # 顔面非認識回数の境界
+    count_boundary=10
 
     # 変換処理ループ
     while end_flag == True:
@@ -38,17 +49,26 @@ if __name__ == '__main__':
         face_list = cascade.detectMultiScale(c_frame, minSize=(100, 100))
 
           # 検出した顔に印を付ける
-        if len(face_list) == 0:
-            cv2.imshow('Frame', c_frame)
-        else:
-            for (x, y, w, h) in face_list:
+        if len(face_list) != 0:
+            count=0
+            for face_num, (x, y, w, h) in enumerate(face_list): # face_numで何番目の顔か数えている
                 color = (0, 0, 225)
-                pen_w = 3
-                # cv2.rectangle(c_frame, (x, y), (x+w, y+h), color, thickness = pen_w)
 
                 # 重ね合わせたフレームを表示する
-                c_frame = overlayImage(c_frame, cv2_img, (x, y), (w, h))
+                c_frame = overlayImage(c_frame, cv2_img[face_num], (x, y-h), (w, h))
                 cv2.imshow('Frame', c_frame)
+
+        else:
+            #顔が連続で検出されない回数
+            count+=1
+
+            #その回数がcount_boundaryを超えた場合
+            if count>=count_boundary:
+                cv2.imshow('Frame', c_frame)
+                #重ねる画像を変えちゃうぞ？(画像が入ってる配列の要素の順番をシャッフル)
+                random.shuffle(cv2_img)
+                
+            
 
        
 
